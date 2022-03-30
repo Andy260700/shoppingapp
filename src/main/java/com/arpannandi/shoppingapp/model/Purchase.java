@@ -14,6 +14,9 @@ public class Purchase {
     @Column(name="date", nullable = false)
     private LocalDateTime date;
 
+    @Column(name="price", nullable = false)
+    private double price;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "apparel_id")
     private Apparel apparel;
@@ -24,10 +27,11 @@ public class Purchase {
 
     public Purchase(){}
 
-    public Purchase(LocalDateTime date, Apparel apparel, User user) {
+    public Purchase(LocalDateTime date, Double price, Apparel apparel, User user) {
         this.date = date;
         this.apparel = apparel;
         this.user = user;
+        this.price = price;
     }
 
     public Long getPurchaseId() {
@@ -36,6 +40,10 @@ public class Purchase {
 
     public LocalDateTime getDate() {
         return date;
+    }
+
+    public double getPrice() {
+        return price;
     }
 
     public Apparel getApparel() {
@@ -60,6 +68,10 @@ public class Purchase {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
 

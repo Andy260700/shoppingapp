@@ -29,7 +29,7 @@ public class UserAuthController {
 
     @PostMapping
     public String registerUser(@ModelAttribute("user") UserDto userDto){
-        System.out.println(userDto.toString());
+//        System.out.println(userDto.toString());
         userAuthService.saveUser(userDto);
         return "redirect:/registration?success";
     }
