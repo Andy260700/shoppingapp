@@ -1,6 +1,7 @@
 package com.arpannandi.shoppingapp.controller;
 
 import com.arpannandi.shoppingapp.model.Apparel;
+import com.arpannandi.shoppingapp.model.Deal;
 import com.arpannandi.shoppingapp.repository.UserRepository;
 import com.arpannandi.shoppingapp.service.ApparelService;
 import com.arpannandi.shoppingapp.service.DealService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -64,6 +66,8 @@ public class MainController {
         if (principal != null) {
             name = principal.getName();
         }
+        List<Deal> dealList = dealService.showDeals(name);
+        model.addAttribute("dealList", dealList);
         model.addAttribute("username", name);
         model.addAttribute("role", role);
         return "deals";
@@ -107,28 +111,6 @@ public class MainController {
         model.addAttribute("username", name);
         model.addAttribute("role", role);
         return "seasonals";
-    }
-
-    @GetMapping("/search")
-    public String search(Authentication authentication, Principal principal, Model model, @RequestParam(value = "phrase", required = false) String phrase) {
-        String name=null;
-        String role=null;
-        if(authentication != null) {
-            Collection<? extends GrantedAuthority> granted = authentication.getAuthorities();
-            if (granted != null) {
-                role = granted.toArray()[0].toString();
-            }
-        }
-        if (principal != null) {
-            name = principal.getName();
-        }
-
-        List<Apparel> apparelList = apparelService.search(phrase);
-        model.addAttribute("apparelList", apparelList);
-
-        model.addAttribute("username", name);
-        model.addAttribute("role", role);
-        return "search";
     }
 
 }

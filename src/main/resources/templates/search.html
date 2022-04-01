@@ -66,6 +66,17 @@
     <div class="container">
 <!--        <h2 class="text-center pt-3 pb-3">Keep shoping !!</h2>-->
 <!--      enter the  search form-->
+        <form data-th-action="@{/search}" method="post" data-th-object="${searchObject}">
+            <div class="form-group">
+                <label class="control-label" for="phrase"> Enter text </label>
+                <input id="phrase" class="form-control" name="phrase" type="text" required autofocus="autofocus" data-th-field="*{phrase}"/>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Search</button>
+            </div>
+
+        </form>
 
         <div th:if="${apparelList.empty}">
             No Apparels to show right now
