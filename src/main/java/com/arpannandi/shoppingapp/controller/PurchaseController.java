@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Controller
@@ -25,10 +28,16 @@ public class PurchaseController {
     }
 
     @PostMapping("/user/purchase")
-    public ModelAndView purchaseItem(@RequestParam("apparelId") Long apparelId, @RequestParam("cost") Double cost, Principal principal){
+    public ModelAndView purchaseItem(@RequestParam("apparelId") Long apparelId, @RequestParam("cost") Double cost, Principal principal, HttpSession httpSession){
+        if(httpSession.getAttribute("phrases")==null)
+            httpSession.setAttribute("phrases", new HashSet<String>());
+        if(httpSession.getAttribute("prices")==null) {
+            httpSession.setAttribute("prices", new ArrayList<Double>());
+        }
+
         String name = principal.getName();
-        purchaseService.addTransaction(name, cost, apparelId);
-        return new ModelAndView("redirect:/");
+        purchaseService.addTransaction(name, cost, apparelId, httpSession);
+        return new ModelAndView("redirect:/user/history");
     }
 
     @GetMapping("/user/history")
@@ -53,4 +62,17 @@ public class PurchaseController {
 
         return "history";
     }
+
+    @PostMapping("/details")
+    public ModelAndView showDetails(HttpSession httpSession, @RequestParam("apparelId") Long apparelId, @RequestParam("cost") Double cost){
+        if(httpSession.getAttribute("phrases")==null)
+            httpSession.setAttribute("phrases", new HashSet<String>());
+        if(httpSession.getAttribute("prices")==null) {
+            httpSession.setAttribute("prices", new ArrayList<Double>());
+        }
+        purchaseService.detailsToSession(apparelId,cost,httpSession);
+
+        return new ModelAndView("redirect:/");
+    }
+
 }

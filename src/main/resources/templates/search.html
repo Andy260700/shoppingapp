@@ -100,7 +100,11 @@
                         </div>
                         <h6 class="text-success">Free shipping</h6>
                         <div class="d-flex flex-column mt-4">
-                            <button class="btn btn-primary btn-sm" type="button">Details</button>
+                            <form method="POST" th:action="@{/details}">
+                                <input type="hidden" name="apparelId" id="apparelId_" th:value="${apparel.apparelId}" />
+                                <input type="hidden" name="cost" id="cost_" th:value="${apparel.price}" />
+                                <button type="submit" name="details" value="value" class="btn btn-primary btn-sm">Details</button>
+                            </form>
                             <form method="POST" th:action="@{/user/purchase}">
                                 <input type="hidden" name="apparelId" id="apparelId" th:value="${apparel.apparelId}" />
                                 <input type="hidden" name="cost" id="cost" th:value="${apparel.price}" />

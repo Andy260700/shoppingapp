@@ -85,11 +85,15 @@
                     <div class="align-items-center align-content-center col-md-3 border-left mt-1">
                         <div class="d-flex flex-row align-items-center">
                             <h3 class="mr-1"><span th:text="${deal.discountPrice}"></span></h3>
-                            <span class="strike-text"><span th:text="${deal.apparel.price}"></span>
+                            <span class="strike-text"><span th:text="${deal.apparel.price}"></span></span>
                         </div>
                         <h6 class="text-success">Free shipping</h6>
                         <div class="d-flex flex-column mt-4">
-                            <button class="btn btn-primary btn-sm" type="button">Details</button>
+                            <form method="POST" th:action="@{/details}">
+                                <input type="hidden" name="apparelId" id="apparelId_" th:value="${deal.apparel.apparelId}" />
+                                <input type="hidden" name="cost" id="cost_" th:value="${deal.discountPrice}" />
+                                <button type="submit" name="details" value="value" class="btn btn-primary btn-sm">Details</button>
+                            </form>
                             <form method="POST" th:action="@{/user/purchase}">
                                 <input type="hidden" name="apparelId" id="apparelId" th:value="${deal.apparel.apparelId}" />
                                 <input type="hidden" name="cost" id="cost" th:value="${deal.discountPrice}" />

@@ -9,9 +9,12 @@ import com.arpannandi.shoppingapp.repository.ApparelRepository;
 import com.arpannandi.shoppingapp.repository.UserRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import java.lang.Math;
 
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service("apparelService")
@@ -31,9 +34,13 @@ public class ApparelService {
         return apparel.getApparelId().toString();
     }
 
-    public List<Apparel> search(String phrase){
+    public List<Apparel> search(String phrase, HttpSession httpSession){
         if(phrase==null)
             return new ArrayList<>();
+
+        HashSet<String> phrases = (HashSet<String>) httpSession.getAttribute("phrases");
+        phrases.add(phrase);
+        httpSession.setAttribute("phrases",phrases);
 
         List<Apparel> apparelList = apparelRepository.findByNameContaining(phrase);
         apparelList.addAll(apparelRepository.findByCategoryContaining(phrase));
@@ -42,8 +49,15 @@ public class ApparelService {
         return apparelList;
     }
 
-    public List<Apparel> homePageList(String username){
+    public List<Apparel> homePageList(String username, HttpSession httpSession){
         List<Apparel> apparelList = new ArrayList<>();
+        HashSet<String> phrases = (HashSet<String>) httpSession.getAttribute("phrases");
+        ArrayList<Double> prices = (ArrayList<Double>) httpSession.getAttribute("prices");
+
+        double mean = 1500.0 ;
+        double variance = 1000.0; //standard deviation
+
+
         if(username==null){
             apparelList = apparelRepository.findAll();
         }
@@ -57,7 +71,52 @@ public class ApparelService {
                 apparelList = apparelRepository.findByGenderAndSeason(user.getGender(), season);
             }
         }
-        return apparelList;
+
+        List<Apparel> resList = new ArrayList<>();
+        if(prices.size()>=5){
+            double sum = 0;
+            double sd_sum = 0;
+            for(double d : prices)
+                sum += d;
+
+            mean = sum/prices.size();
+
+            for(double d: prices)
+                sd_sum += ((d-mean)*(d-mean));
+
+            variance = Math.sqrt(sd_sum/prices.size()) ;
+        }
+
+        if(!phrases.isEmpty()) {
+//            for (String word : phrases)
+//                System.out.println(word);
+
+            for (Apparel apparel : apparelList) {
+                String temp = apparel.getBrand() + " " + apparel.getName() + " " + apparel.getCategory();
+//                System.out.println(temp);
+//                System.out.println(mean);
+//                System.out.println(variance);
+//                System.out.println(apparel.getPrice());
+
+                if (apparel.getPrice() > (mean-variance) && apparel.getPrice() < (mean+variance)) {
+                    for (String word : phrases) {
+                        if (temp.contains(word)) {
+                            System.out.println("====");
+                            resList.add(apparel);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            for(Apparel apparel : apparelList){
+                if (apparel.getPrice() > (mean-variance) && apparel.getPrice() < (mean+variance))
+                    resList.add(apparel);
+            }
+        }
+
+        return resList;
     }
 
     public List<Apparel> seasonalPageList(String username){
@@ -84,5 +143,6 @@ public class ApparelService {
         }
         return apparelList;
     }
+
 
 }

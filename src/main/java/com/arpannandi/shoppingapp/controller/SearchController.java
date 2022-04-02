@@ -10,9 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Controller
@@ -31,7 +33,13 @@ public class SearchController {
     }
 
     @PostMapping("/search")
-    public String searchFunc(Authentication authentication, Principal principal, Model model, @ModelAttribute("searchObject") SearchDto searchDto ){
+    public String searchFunc(Authentication authentication, Principal principal, Model model, @ModelAttribute("searchObject") SearchDto searchDto, HttpSession httpSession){
+        if(httpSession.getAttribute("phrases")==null)
+            httpSession.setAttribute("phrases", new HashSet<String>());
+        if(httpSession.getAttribute("prices")==null) {
+            httpSession.setAttribute("prices", new ArrayList<Double>());
+        }
+
         String name=null;
         String role=null;
         if(authentication != null) {
@@ -44,7 +52,7 @@ public class SearchController {
             name = principal.getName();
         }
 
-        List<Apparel> apparelList = apparelService.search(searchDto.getPhrase());
+        List<Apparel> apparelList = apparelService.search(searchDto.getPhrase(), httpSession);
         model.addAttribute("apparelList", apparelList);
 
         model.addAttribute("username", name);
