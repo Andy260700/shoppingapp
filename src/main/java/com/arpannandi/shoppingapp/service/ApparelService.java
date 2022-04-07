@@ -42,11 +42,13 @@ public class ApparelService {
         phrases.add(phrase);
         httpSession.setAttribute("phrases",phrases);
 
-        List<Apparel> apparelList = apparelRepository.findByNameContaining(phrase);
+        HashSet<Apparel> apparelList = apparelRepository.findByNameContaining(phrase);
         apparelList.addAll(apparelRepository.findByCategoryContaining(phrase));
         apparelList.addAll(apparelRepository.findByBrand(phrase));
 
-        return apparelList;
+        ArrayList<Apparel> apparelArrayList = new ArrayList<>(apparelList);
+
+        return apparelArrayList;
     }
 
     public List<Apparel> homePageList(String username, HttpSession httpSession){
@@ -101,7 +103,7 @@ public class ApparelService {
                 if (apparel.getPrice() > (mean-variance) && apparel.getPrice() < (mean+variance)) {
                     for (String word : phrases) {
                         if (temp.contains(word)) {
-                            System.out.println("====");
+//                            System.out.println("====");
                             resList.add(apparel);
                             break;
                         }
